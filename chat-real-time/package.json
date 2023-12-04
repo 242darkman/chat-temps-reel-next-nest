@@ -9,12 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "lodash": "^4.17.21",
     "next": "14.0.3",
     "react": "^18",
     "react-dom": "^18",
+    "react-icons": "^4.12.0",
+    "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.5",
     "autoprefixer": "^10.0.1",
+    "babel-preset-next": "^1.4.0",
     "eslint": "^8",
     "eslint-config-next": "14.0.3",
     "postcss": "^8",
