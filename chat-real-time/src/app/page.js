@@ -1,23 +1,14 @@
 'use client';
 
-import { UserContext, UserProvider } from '@/stores/UserContext.js';
-import { useContext, useState } from 'react';
-
-import BaseButton from '@/components/BaseButton.jsx';
+import BaseButton from './(component)/BaseButton.jsx';
 import { FaArrowRight } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useUserContext } from './(context)/UserContext.js';
 
 export default function Home() {
-  return (
-    <UserProvider>
-      <HomePageContent />
-    </UserProvider>
-  );
-}
-
-function HomePageContent() {
   const [username, setUsername] = useState('');
-  const { setContextUsername } = useContext(UserContext);
+  const { setContextUsername } = useUserContext();
   const router = useRouter();
   
   const handleUsernameChange = (event) => {
@@ -30,7 +21,7 @@ function HomePageContent() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full py-2">
+    <div className="flex flex-col flex-grow items-center justify-center py-2">
       <h1 className="text-4xl mb-1 text-blue-400 shadow-lg animate-pulse">
         Bienvenue sur ParleyPoint
       </h1>
@@ -39,10 +30,10 @@ function HomePageContent() {
       </p>
       <input
         type="text"
-        placeholder="Nom d'utilisateur"
+        placeholder="Nom d'utilisateur..."
         value={username}
         onChange={handleUsernameChange}
-        className="my-8 p-3 border rounded-md w-1/3"
+        className="my-8 p-3 border rounded-md w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       {username && (
         <BaseButton

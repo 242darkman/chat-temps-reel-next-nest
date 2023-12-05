@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+'use client';
+
+import { createContext, useContext, useState } from 'react';
 
 /**
  * Création d'un nouveau contexte
  */
-export const UserContext = React.createContext();
+export const UserContext = createContext({});
+
+export const useUserContext = () => {
+  return useContext(UserContext);
+}
 
 /**
  * Création d'un composant UserProvider qui enveloppera ses enfants avec un UserContext.Provide,
  * rendant le contexte disponible à tous les composants enfants
  *
- * @param {object} children - The children of the UserProvider component.
- * @return {JSX.Element} The wrapped children with the UserContext.Provider.
+ * @param {object} children - Les enfants du composant UserProvider.
+ * @return {JSX.Element} Les enfants enveloppés avec le UserContext.Provider.
  */
 export const UserProvider = ({ children }) => {
   const [contextUsername, setContextUsername] = useState('');
