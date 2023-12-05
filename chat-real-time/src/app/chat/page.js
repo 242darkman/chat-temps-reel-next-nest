@@ -1,43 +1,57 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
+
 import BaseChatInput from '../(component)/BaseChatInput.jsx';
 import BaseChatMessagesDisplay from '../(component)/BaseChatMessagesDisplay.jsx';
-import React from 'react';
 import { ToastContainer } from 'react-toastify';
+import io from 'socket.io-client';
 import { toast } from 'react-toastify';
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserContext } from '../(context)/UserContext.js';
 
 export default function ChatPage() {
-  const messages = [
+  const [messages, setMessages] = useState([]);
+  /*const messages = [
     { user: '242darkman', message: 'Hello!', timestamp: '05/12/2023 23:43' },
     { user: 'Siboy', message: 'Hi there!', timestamp: '05/12/2023 23:45' },
     { user: '242darkman', message: 'How are you?', timestamp: '05/12/2023 23:46' },
     { user: 'Siboy', message: 'I am good, thanks!', timestamp: '05/12/2023 23:47' },
-  ];
+  ];*/
   const { contextUsername } = useUserContext();
   const router = useRouter();
+  const socket = io('http://localhost:8001'); // Connexion socket.io et écoute des messages
 
   useEffect(() => {
+    // Vérifie si le nom d'utilisateur existe
     if (!contextUsername) {
-      toast.error("Le nom d'utilisateur est vide. Vous allez être rediriger vers la page d'accueil...", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-    });
+      toast.error("Le nom d'utilisateur est vide. Vous allez être redirigé vers la page d'accueil...", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
       router.push('/');
+      return;
     }
+
+    socket.on('connect', () => console.log('youuhhoooouuuuu'));
+
+    socket.on('message', (newMessage) => {
+      console.log("🚀 ~ file: page.js:43 ~ socket.on ~ newMessage:", newMessage)
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+    });
+
+    // Nettoie en se déconnectant du socket lors du démontage du composant
+    return () => socket.disconnect();
   }, [contextUsername, router]);
 
   const handleSend = (message) => {
-    // !important Implement this function
-    console.log('Sending message:', message);
+    socket.emit('send_message', { username: contextUsername, message });
   };
 
   return (
