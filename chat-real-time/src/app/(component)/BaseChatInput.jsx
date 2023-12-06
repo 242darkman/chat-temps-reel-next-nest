@@ -19,7 +19,7 @@ const BaseChatInput = ({ onSend }) => {
         type="text"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="flex-grow p-3.5 rounded-l-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+        className="flex-grow p-3.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" 
         placeholder="Saisissez un message..."
       />
       <BaseButton 
