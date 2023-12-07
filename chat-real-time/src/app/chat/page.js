@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 
 import BaseChatInput from '../(component)/BaseChatInput.jsx';
 import BaseChatMessagesDisplay from '../(component)/BaseChatMessagesDisplay.jsx';
+import LANGUAGES from '../(utils)/app.constants.js';
 import { ToastContainer } from 'react-toastify';
+import get from 'lodash/get.js';
 import io from 'socket.io-client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useUserContext } from '../(context)/UserContext.js';
-import LANGUAGES from '../(utils)/app.constants.js';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -46,11 +47,17 @@ export default function ChatPage() {
   }, [contextUsername, router]);
 
   const handleSend = (message) => {
-    socket.emit('send_message', { username: contextUsername, message });
+    const msg = get(message, 'message');
+    const translationLanguage = get(message, 'translationLanguage');
+    socket.emit('send_message', {
+      username: contextUsername,
+      message: msg,
+      translationLanguage
+    });
   };
 
   return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full w-full">
         <div className="flex-grow overflow-y-auto p-4 scrollbar-hide">
           <BaseChatMessagesDisplay messages={messages} />
         </div>

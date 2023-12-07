@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
                   </div>
                 </Link>
             </nav>
-            <main className="container mx-auto p-1 flex-grow flex justify-center items-center">
+            <main className="container mx-auto p-1 flex-grow flex items-center">
             <UserProvider>
               {children}
             </UserProvider>

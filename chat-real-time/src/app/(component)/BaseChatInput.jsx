@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 
 import BaseButton from './BaseButton.jsx';
+import LANGUAGES from '../(utils)/app.constants.js';
 import { MdSend } from 'react-icons/md';
+import find from 'lodash/find.js';
+import get from 'lodash/get.js';
+import isEmpty from 'lodash/isEmpty.js';
 
 const BaseChatInput = ({ onSend, options = [], }) => {
+  const defaultLanguage = find(LANGUAGES, { value: 'French' });
   const [message, setMessage] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
 
-  const handleSend = () => {
+  const handleSend = (value) => {
+    if (!isEmpty(value)) {
+      setSelectedLanguage(value);
+    }
+
     if (message.trim() !== '') {
-      onSend(message);
+      const translationLanguage = get(selectedLanguage, 'value');
+      const sendedMessage = { message, translationLanguage };
+      onSend(sendedMessage);
       setMessage('');
     }
   };

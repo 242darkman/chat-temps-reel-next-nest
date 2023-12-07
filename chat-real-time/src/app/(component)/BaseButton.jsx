@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaCheck, FaCaretUp, FaCaretDown } from 'react-icons/fa';
+import { FaCaretDown, FaCaretUp, FaCheck } from 'react-icons/fa';
+import React, { useEffect, useRef, useState } from 'react';
 
 const BaseButton = ({
   theme,
@@ -58,7 +58,6 @@ const BaseButton = ({
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-    onClick(option);
     setShowDropdown(false);
   };
 
