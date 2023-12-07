@@ -5,7 +5,9 @@ const BaseChatBubble = ({ user, message, timestamp, isContinued }) => {
   const { contextUsername } = useUserContext();
 
   return (
-    <div className={`flex ${user === `${contextUsername}` ? 'justify-end' : 'justify-start'} mb-4`}>
+    <div
+      className={`flex ${user === `${contextUsername}` ? 'justify-end' : 'justify-start'} mb-4`}
+    >
       <div className={`flex flex-col max-w-2/3`}>
         {!isContinued && <p className="text-xs text-gray-500 mb-1">{user === `${contextUsername}` ? 'Moi' : user}</p>}
         <div className={`rounded-xl p-4 shadow-md ${user === `${contextUsername}` ? 'bg-blue-200' : 'bg-gray-200'} relative`}>
