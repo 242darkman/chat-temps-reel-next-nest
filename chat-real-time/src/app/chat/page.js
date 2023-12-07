@@ -26,13 +26,7 @@ export default function ChatPage() {
     if (!contextUsername) {
       toast.error("Le nom d'utilisateur est vide. Vous allez être redirigé vers la page d'accueil...", {
         position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+        autoClose: 3000
       });
       router.push('/');
       return;
