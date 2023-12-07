@@ -22,7 +22,7 @@ export default function ChatPage() {
     if (!contextUsername) {
       toast.error("Le nom d'utilisateur est vide. Vous allez être redirigé vers la page d'accueil...", {
         position: "top-right",
-        autoClose: 10000,
+        autoClose: 6000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

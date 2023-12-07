@@ -15,9 +15,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   
   return (
-    <UserProvider>
-      <html lang="fr">
-        <body className={`${inter.className} bg-slate-300`}>
+    <html lang="fr">
+      <body className={`${inter.className} bg-slate-300 `}>
+        <div className='h-screen flex flex-col'>
             <nav className="bg-white p-6">
                 <Link href="/">
                   <div className="container mx-auto">
@@ -25,11 +25,13 @@ export default function RootLayout({ children }) {
                   </div>
                 </Link>
             </nav>
-            <main className="container mx-auto p-2.5">
+            <main className="container mx-auto p-1 flex-grow flex justify-center items-center">
+            <UserProvider>
               {children}
-            </main>
+            </UserProvider>
+          </main>
+          </div>
         </body>
       </html>
-    </UserProvider>
   )
 }

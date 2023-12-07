@@ -10,7 +10,7 @@ const BaseChatMessagesDisplay = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div className="overflow-y-auto p-4 h-full">
+    <div className="overflow-y-auto p-4">
       {messages.map((message, index) => (
         <BaseChatBubble
             key={index}

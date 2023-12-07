@@ -2,10 +2,10 @@
 
 import BaseButton from './(component)/BaseButton.jsx';
 import { FaArrowRight } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useUserContext } from './(context)/UserContext.js';
-import { toast } from 'react-toastify';
 
 export default function Home() {
   const [username, setUsername] = useState('');
@@ -19,11 +19,11 @@ export default function Home() {
   const handleChatRedirect = () => {
     setContextUsername(username);
     router.push('/chat');
-    toast.success(`Bienvenue ${username}! Prêt pour une nouvelle discussion ?`);
+    toast.success(`Bienvenue ${username} ! Prêt pour une nouvelle discussion ?`);
   };
 
   return (
-    <div className="flex flex-col flex-grow items-center justify-center py-2">
+    <div className="flex flex-col flex-grow items-center justify-center py-2 w-full">
       <h1 className="text-4xl mb-1 text-blue-400 shadow-lg animate-pulse">
         Bienvenue sur ParleyPoint
       </h1>
@@ -35,7 +35,7 @@ export default function Home() {
         placeholder="Nom d'utilisateur..."
         value={username}
         onChange={handleUsernameChange}
-        className="my-8 p-3 border rounded-md w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="my-8 p-3 border rounded-md w-2/6 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       {username && (
         <BaseButton
