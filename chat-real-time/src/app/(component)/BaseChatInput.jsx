@@ -10,15 +10,11 @@ import isEmpty from 'lodash/isEmpty.js';
 const BaseChatInput = ({ onSend, options = [], }) => {
   const defaultLanguage = find(LANGUAGES, { value: 'French' });
   const [message, setMessage] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
 
-  const handleSend = (value) => {
-    if (!isEmpty(value)) {
-      setSelectedLanguage(value);
-    }
+  const handleSend = (selectedLanguage) => {
+    const translationLanguage = get(selectedLanguage, 'value') ?? get(defaultLanguage, 'value');
 
     if (message.trim() !== '') {
-      const translationLanguage = get(selectedLanguage, 'value');
       const sendedMessage = { message, translationLanguage };
       onSend(sendedMessage);
       setMessage('');
