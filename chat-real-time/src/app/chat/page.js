@@ -57,7 +57,7 @@ export default function ChatPage() {
   };
 
   return (
-      <div className="flex flex-col h-full w-full">
+      <div className="flex flex-col h-full w-8/12 m-auto">
         <div className="flex-grow overflow-y-auto p-4 scrollbar-hide">
           <BaseChatMessagesDisplay messages={messages} />
         </div>
