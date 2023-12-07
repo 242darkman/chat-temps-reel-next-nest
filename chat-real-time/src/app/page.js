@@ -19,7 +19,7 @@ export default function Home() {
   const handleChatRedirect = () => {
     setContextUsername(username);
     router.push('/chat');
-    toast.success(`Bienvenue ${username} ! Prêt pour une nouvelle discussion ?`);
+    toast.success(`Bienvenue ${username} ! Prêt pour une nouvelle discussion ?`, {autoClose: 3000});
   };
 
   return (

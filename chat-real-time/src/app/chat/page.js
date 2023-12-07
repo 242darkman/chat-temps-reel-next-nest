@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import BaseChatInput from '../(component)/BaseChatInput.jsx';
 import BaseChatMessagesDisplay from '../(component)/BaseChatMessagesDisplay.jsx';
+import BaseNavBar from '../(component)/BaseNavBar.jsx';
 import LANGUAGES from '../(utils)/app.constants.js';
 import { ToastContainer } from 'react-toastify';
 import get from 'lodash/get.js';
@@ -23,7 +24,7 @@ export default function ChatPage() {
     if (!contextUsername) {
       toast.error("Le nom d'utilisateur est vide. Vous allez être redirigé vers la page d'accueil...", {
         position: "top-right",
-        autoClose: 6000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -57,7 +58,13 @@ export default function ChatPage() {
   };
 
   return (
-      <div className="flex flex-col h-full w-8/12 m-auto">
+    <div className="flex flex-col h-full w-8/12 m-auto bg-gray-400">
+        <BaseNavBar 
+          selectedMessages={[]} 
+          //onTranslate={handleTranslate} 
+          //onValidate={handleValidate} 
+        />
+      
         <div className="flex-grow overflow-y-auto p-4 scrollbar-hide">
           <BaseChatMessagesDisplay messages={messages} />
         </div>
