@@ -5,7 +5,6 @@ import LANGUAGES from '../(utils)/app.constants.js';
 import { MdSend } from 'react-icons/md';
 import find from 'lodash/find.js';
 import get from 'lodash/get.js';
-import isEmpty from 'lodash/isEmpty.js';
 
 const BaseChatInput = ({ onSend, options = [], }) => {
   const defaultLanguage = find(LANGUAGES, { value: 'French' });
@@ -28,7 +27,7 @@ const BaseChatInput = ({ onSend, options = [], }) => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         className="flex-grow p-3.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-        placeholder="Saisissez un message..."
+        placeholder="Ecrire un message..."
       />
       <BaseButton 
         onClick={handleSend}
