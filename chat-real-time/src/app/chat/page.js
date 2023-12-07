@@ -9,15 +9,10 @@ import io from 'socket.io-client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useUserContext } from '../(context)/UserContext.js';
+import LANGUAGES from '../(utils)/app.constants.js';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
-  /*const messages = [
-    { user: '242darkman', message: 'Hello!', timestamp: '05/12/2023 23:43' },
-    { user: 'Siboy', message: 'Hi there!', timestamp: '05/12/2023 23:45' },
-    { user: '242darkman', message: 'How are you?', timestamp: '05/12/2023 23:46' },
-    { user: 'Siboy', message: 'I am good, thanks!', timestamp: '05/12/2023 23:47' },
-  ];*/
   const { contextUsername } = useUserContext();
   const router = useRouter();
   const socket = io('http://localhost:8001'); // Connexion socket.io et écoute des messages
@@ -27,7 +22,7 @@ export default function ChatPage() {
     if (!contextUsername) {
       toast.error("Le nom d'utilisateur est vide. Vous allez être redirigé vers la page d'accueil...", {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 10000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -61,7 +56,7 @@ export default function ChatPage() {
         </div>
 
         <div className="p-4">
-          <BaseChatInput onSend={handleSend} />
+          <BaseChatInput onSend={handleSend} options={LANGUAGES}/>
         </div>
       
         <ToastContainer />

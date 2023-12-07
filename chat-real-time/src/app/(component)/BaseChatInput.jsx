@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import BaseButton from './BaseButton.jsx';
 import { MdSend } from 'react-icons/md';
 
-const BaseChatInput = ({ onSend }) => {
+const BaseChatInput = ({ onSend, options = [], }) => {
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
@@ -25,8 +25,11 @@ const BaseChatInput = ({ onSend }) => {
       <BaseButton 
         onClick={handleSend}
         icon={<MdSend />} 
+        splitMode={true}
         theme="primary" 
         className="rounded-r-lg"
+        dropdownPosition="top"
+        options={options}
       >
         Envoyer
       </BaseButton>
