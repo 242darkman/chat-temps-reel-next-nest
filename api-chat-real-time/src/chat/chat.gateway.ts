@@ -9,11 +9,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 
-import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Logger, UseFilters } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { CustomExceptionFilter } from './http-ws-exception.filter';
-import { get } from 'lodash';
+import { get, isEqual } from 'lodash';
+import { ChatService } from './chat.service';
 
 class ChatMessage {
   @IsNotEmpty()
@@ -34,6 +35,8 @@ export class ChatGateway
 
   @WebSocketServer()
   server: Server;
+
+  constructor(private chatService: ChatService) {}
 
   /**
    * La fonction afterInit est appelée après l'initialisation de la classe.
@@ -78,18 +81,75 @@ export class ChatGateway
     return `${day}/${month}/${year} à ${hours}:${minutes}`;
   }
 
-  @SubscribeMessage('send_message')
-  handleMessage(
-    @MessageBody() message: ChatMessage,
-    @ConnectedSocket() _client: Socket,
-  ) {
-    const timestamp = this.formatFrenchDate({ date: new Date() });
-    this.logger.debug(`Message: ${message}`);
-    // Diffuser le message à tous les clients connectés
+  /**
+   * Diffusion le message à tous les clients connectés
+   */
+  private spreadMessage(username: string, message: string, timestamp: string) {
     this.server.emit('message', {
-      username: get(message, 'username'),
-      message: get(message, 'message'),
+      username,
+      message,
       timestamp,
     });
+  }
+
+  @SubscribeMessage('send_message')
+  async handleMessage(
+    @MessageBody() msg: ChatMessage,
+    //@ConnectedSocket() _client: Socket,
+  ) {
+    const username = get(msg, 'username');
+    this.logger.debug(`username: ${username}`);
+    const message = get(msg, 'message');
+    this.logger.debug(`Message: ${message}`);
+    const timestamp = this.formatFrenchDate({ date: new Date() });
+    const translationLanguage = get(msg, 'translationLanguage');
+    this.logger.debug(`Message: ${translationLanguage}`);
+    /*const validationResult = await this.chatService.checkInformation(message);
+
+    // 3. Si l'information est inexacte ou trompeuse, signaler cette information à l'utilisateur
+    if (validationResult === 'Inexact or false information') {
+      this.spreadMessage(
+        username,
+        'The information you provided is inexact or false. Please provide accurate information.',
+        timestamp,
+      );
+      return;
+    }
+    */
+
+    // 2. Envoyer le message à l'API d'OpenAI pour la traduction
+    if (!isEqual(translationLanguage, 'French')) {
+      const transledMessage = await this.chatService.translate(
+        message,
+        translationLanguage,
+      );
+      this.spreadMessage(username, transledMessage, timestamp);
+      return;
+    }
+
+    // 4. Envoyer le message à l'API d'OpenAI pour générer des suggestions de réponse
+    // ! Code de gestion pour les suggestions
+
+    this.spreadMessage(username, message, timestamp);
+  }
+
+  @SubscribeMessage('send_audio')
+  async handleAudio(
+    @MessageBody() audio: Buffer,
+    @ConnectedSocket() _client: Socket,
+  ) {
+    // Récupérer le nom d'utilisateur du client
+    const username = _client.handshake.query.username;
+
+    // Récupérer le timestamp
+    const timestamp = this.formatFrenchDate({ date: new Date() });
+
+    // Convertir le message audio en texte
+    const response = await this.chatService.transcribeAudioToTextMessage(audio);
+
+    const transcribedText = response.choices[0].message.content;
+
+    // Diffuser le texte transcrit à tous les clients connectés
+    //this.spreadMessage(username, transcribedText, timestamp);
   }
 }
