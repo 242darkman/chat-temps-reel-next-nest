@@ -14,13 +14,15 @@ import { useRouter } from 'next/navigation';
 import { useUserContext } from '../(context)/UserContext.js';
 
 export default function ChatPage() {
-  const socket = io('http://localhost:8001'); // Connexion socket.io et écoute des messages
+  const socket = io('http://localhost:8001');
   const router = useRouter();
   const { contextUsername } = useUserContext();
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // Vérifie si le nom d'utilisateur existe
+    /**
+     * Vérifie si le nom d'utilisateur existe
+     */
     if (!contextUsername) {
       toast.error("Le nom d'utilisateur est vide. Vous allez être redirigé vers la page d'accueil...", {
         position: "top-right",
@@ -38,15 +40,23 @@ export default function ChatPage() {
 
     socket.on('connect', () => console.log('youuhhoooouuuuu'));
 
+    /**
+     * on écoute les messages entrants
+     */
     socket.on('message', (newMessage) => {
       console.log("🚀 ~ file: page.js:43 ~ socket.on ~ newMessage:", newMessage)
       setMessages(prevMessages => [...prevMessages, newMessage]);
     });
 
-    // Nettoie en se déconnectant du socket lors du démontage du composant
+    /**
+     * Nettoie en se déconnectant du socket lors du démontage du composant
+     */
     return () => socket.disconnect();
   }, [contextUsername, router]);
 
+  /**
+   * fonction gérant la diffusion de messages dans le socket
+   */
   const handleSend = (message) => {
     const msg = get(message, 'message');
     const translationLanguage = get(message, 'translationLanguage');
