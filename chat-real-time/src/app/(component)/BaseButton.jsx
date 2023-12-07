@@ -2,13 +2,14 @@ import { FaCaretDown, FaCaretUp, FaCheck } from 'react-icons/fa';
 import React, { useEffect, useRef, useState } from 'react';
 
 const BaseButton = ({
-  theme,
+  theme = 'primary',
   children,
   icon,
   iconPosition = 'right',
   onClick,
   splitMode = false,
   options = [],
+  style = '',
   dropdownPosition = 'bottom'
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -27,13 +28,13 @@ const BaseButton = ({
   const roundedClasses = splitMode ? 'rounded-tr-none rounded-br-none' : 'rounded-lg';
 
   const getButtonClasses = () => {
-    const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 p-3.5';
+    const baseClasses = `inline-flex items-center justify-center font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 p-3.5 ${style}`;
     
     if (theme === 'primary') {
       return `${baseClasses} bg-blue-500 text-white hover:bg-blue-600`;
     }
     if (theme === 'secondary') {
-      return `${baseClasses} bg-gray-300 text-gray-700 hover:bg-gray-400`;
+      return `${baseClasses} bg-green-500 text-white hover:bg-green-300`;
     }
     if (theme === 'tertiary') {
       return `${baseClasses} bg-transparent text-gray-500 hover:text-gray-700`;
