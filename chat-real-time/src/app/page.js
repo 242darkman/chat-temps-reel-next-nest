@@ -5,6 +5,7 @@ import { FaArrowRight } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useUserContext } from './(context)/UserContext.js';
+import { toast } from 'react-toastify';
 
 export default function Home() {
   const [username, setUsername] = useState('');
@@ -18,6 +19,7 @@ export default function Home() {
   const handleChatRedirect = () => {
     setContextUsername(username);
     router.push('/chat');
+    toast.success(`Bienvenue ${username}! Prêt pour une nouvelle discussion ?`);
   };
 
   return (
