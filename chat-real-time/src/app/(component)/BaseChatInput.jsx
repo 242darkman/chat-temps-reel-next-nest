@@ -6,7 +6,7 @@ import { MdSend } from 'react-icons/md';
 import find from 'lodash/find.js';
 import get from 'lodash/get.js';
 
-const BaseChatInput = ({ onSend, options = [], }) => {
+const BaseChatInput = ({ onSend, options = []}) => {
   const defaultLanguage = find(LANGUAGES, { value: 'French' });
   const [message, setMessage] = useState('');
 
@@ -26,7 +26,7 @@ const BaseChatInput = ({ onSend, options = [], }) => {
         type="text"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="flex-grow p-3.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+        className="flex-grow p-3.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Ecrire un message..."
       />
       <BaseButton 

@@ -13,10 +13,10 @@ import { useRouter } from 'next/navigation';
 import { useUserContext } from '../(context)/UserContext.js';
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([]);
-  const { contextUsername } = useUserContext();
-  const router = useRouter();
   const socket = io('http://localhost:8001'); // Connexion socket.io et écoute des messages
+  const router = useRouter();
+  const { contextUsername } = useUserContext();
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     // Vérifie si le nom d'utilisateur existe
@@ -63,7 +63,10 @@ export default function ChatPage() {
         </div>
 
         <div className="p-4">
-          <BaseChatInput onSend={handleSend} options={LANGUAGES}/>
+        <BaseChatInput
+          onSend={handleSend}
+          options={LANGUAGES}
+        />
         </div>
       
         <ToastContainer />
