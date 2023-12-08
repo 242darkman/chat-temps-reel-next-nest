@@ -16,14 +16,16 @@ import { useRouter } from 'next/navigation';
 import { useUserContext } from '../(context)/UserContext.js';
 
 export default function ChatPage() {
-  const socket = io('http://localhost:8001');
   const router = useRouter();
   const { contextUsername } = useUserContext();
-  const [messages, setMessages] = useState([]);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
 
   useEffect(() => {
+    const newSocket = io('http://localhost:8001');
+    setSocket(newSocket);
+
+    
     /**
      * Vérifie si le nom d'utilisateur existe
      */
@@ -36,7 +38,7 @@ export default function ChatPage() {
       return;
     }
 
-    socket.on('connect', () => console.log('youuhhoooouuuuu'));
+    newSocket.on('connect', () => console.log('youuhhoooouuuuu'));
 
     /**
      * on écoute les messages entrants
