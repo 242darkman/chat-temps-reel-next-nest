@@ -18,6 +18,9 @@ import { ChatService } from './chat.service';
 
 class ChatMessage {
   @IsNotEmpty()
+  messageId: number | string;
+
+  @IsNotEmpty()
   @IsString()
   username: string;
 
@@ -104,14 +107,10 @@ export class ChatGateway
     //@ConnectedSocket() _client: Socket,
   ) {
     const messageId = get(msg, 'messageId');
-    this.logger.debug(`messageId: ${messageId}`);
     const username = get(msg, 'username');
-    this.logger.debug(`username: ${username}`);
     const message = get(msg, 'message');
-    this.logger.debug(`Message: ${message}`);
     const timestamp = this.formatFrenchDate({ date: new Date() });
     const translationLanguage = get(msg, 'translationLanguage');
-    this.logger.debug(`Message: ${translationLanguage}`);
 
     // 2. Envoyer le message à l'API d'OpenAI pour la traduction
     if (!isEqual(translationLanguage, 'French')) {
