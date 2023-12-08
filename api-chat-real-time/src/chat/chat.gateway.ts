@@ -84,7 +84,12 @@ export class ChatGateway
   /**
    * Diffusion le message à tous les clients connectés
    */
-  private spreadMessage(username: string, message: string, timestamp: string) {
+  private spreadMessage(
+    messageId: number | string,
+    username: string,
+    message: string,
+    timestamp: string,
+  ) {
     this.server.emit('message', {
       username,
       message,
@@ -97,6 +102,8 @@ export class ChatGateway
     @MessageBody() msg: ChatMessage,
     //@ConnectedSocket() _client: Socket,
   ) {
+    const messageId = get(msg, 'messageId');
+    this.logger.debug(`messageId: ${messageId}`);
     const username = get(msg, 'username');
     this.logger.debug(`username: ${username}`);
     const message = get(msg, 'message');
@@ -104,18 +111,6 @@ export class ChatGateway
     const timestamp = this.formatFrenchDate({ date: new Date() });
     const translationLanguage = get(msg, 'translationLanguage');
     this.logger.debug(`Message: ${translationLanguage}`);
-    /*const validationResult = await this.chatService.checkInformation(message);
-
-    // 3. Si l'information est inexacte ou trompeuse, signaler cette information à l'utilisateur
-    if (validationResult === 'Inexact or false information') {
-      this.spreadMessage(
-        username,
-        'The information you provided is inexact or false. Please provide accurate information.',
-        timestamp,
-      );
-      return;
-    }
-    */
 
     // 2. Envoyer le message à l'API d'OpenAI pour la traduction
     if (!isEqual(translationLanguage, 'French')) {
@@ -123,14 +118,10 @@ export class ChatGateway
         message,
         translationLanguage,
       );
-      this.spreadMessage(username, transledMessage, timestamp);
+      this.spreadMessage(messageId, username, transledMessage, timestamp);
       return;
     }
-
-    // 4. Envoyer le message à l'API d'OpenAI pour générer des suggestions de réponse
-    // ! Code de gestion pour les suggestions
-
-    this.spreadMessage(username, message, timestamp);
+    this.spreadMessage(messageId, username, message, timestamp);
   }
 
   @SubscribeMessage('send_audio')
