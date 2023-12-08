@@ -13,7 +13,7 @@ export class ChatService {
         messages: [
           {
             role: 'user',
-            content: `Translate the following message to ${language}: "${message}"`,
+            content: `Translate the following message to ${language}: "${message}". Give just the message translation without double quotes and no explanation`,
           },
         ],
       });
