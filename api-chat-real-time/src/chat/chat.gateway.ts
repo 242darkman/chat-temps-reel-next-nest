@@ -124,6 +124,40 @@ export class ChatGateway
     this.spreadMessage(messageId, username, message, timestamp);
   }
 
+  @SubscribeMessage('process_selected_messages')
+  async handleSelectedMessages(
+    @MessageBody()
+    body: {
+      messages: ChatMessage[];
+      action: string;
+      translationLanguage: string;
+    },
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    const messages = get(body, 'messages');
+    const action = get(body, 'action');
+    const translationLanguage = get(body, 'translationLanguage');
+    const translatedMessages = [];
+
+    for (const msg of messages) {
+      const message = get(msg, 'message');
+
+      if (action === 'translate') {
+        const translatedMessage = await this.chatService.translate(
+          message,
+          translationLanguage,
+        );
+
+        translatedMessages.push({
+          ...msg,
+          message: translatedMessage,
+        });
+      }
+
+      client.emit('update_messages', translatedMessages);
+    }
+  }
+
   @SubscribeMessage('send_audio')
   async handleAudio(
     @MessageBody() audio: Buffer,

@@ -43,15 +43,46 @@ export default function ChatPage() {
     /**
      * on écoute les messages entrants
      */
-    socket.on('message', (newMessage) => {
+    newSocket.on('message', (newMessage) => {
       console.log("🚀 ~ file: page.js:43 ~ socket.on ~ newMessage:", newMessage)
       setMessages(prevMessages => [...prevMessages, newMessage]);
     });
 
     /**
+     * on met à jour les valeurs des messages traduits
+     */
+    newSocket.on('update_messages', (updatedMessages) => {
+      setMessages(prevMessages =>
+        map(prevMessages, (msg) => {
+          const msgId = get(msg, 'messageId');
+          const updatedMessage = find(updatedMessages, (updatedMsg) => {
+            const updatedMsgId = get(updatedMsg, 'messageId');
+            return updatedMsgId === msgId;
+          });
+          return updatedMessage ? updatedMessage : msg;
+        })
+      );
+    });
+
+    /*newSocket.on('verification_result', ({ messageId, result }) => {
+      setMessages(prevMessages =>
+        prevMessages.map(msg => {
+          if (msg.messageId === messageId) {
+            return { ...msg, verificationResult: result };
+          }
+          return msg;
+        })
+      );
+    });*/
+
+    /**
      * Nettoie en se déconnectant du socket lors du démontage du composant
      */
-    return () => socket.disconnect();
+    return () => {
+      newSocket.disconnect();
+      //socket.off('update_message');
+      //socket.off('verification_result');
+    }
   }, [contextUsername, router]);
 
   /**
@@ -60,12 +91,15 @@ export default function ChatPage() {
   const handleSend = (message) => {
     const msg = get(message, 'message');
     const translationLanguage = get(message, 'translationLanguage');
-    socket.emit('send_message', {
-      messageId: messages.length + 1,
-      username: contextUsername,
-      message: msg,
-      translationLanguage
-    });
+    
+    if (socket) {
+      socket.emit('send_message', {
+        messageId: messages.length + 1,
+        username: contextUsername,
+        message: msg,
+        translationLanguage
+      });
+    }
   };
 
   /**
@@ -94,16 +128,47 @@ export default function ChatPage() {
     });
   };
 
+  /**
+   * Logique pour envoyer les messages sélectionnés pour traitement
+   * @param {*} action 
+   */
+  const handleProcessSelectedMessages = (action, translationLanguage) => {
+    if (socket) {
+      socket.emit('process_selected_messages', {
+        action,
+        translationLanguage,
+        messages: selectedMessages
+      });
+    }
+  };
+
+  /**
+   * Gestionnaire pour la traduction
+   */
+  const handleTranslateSelectedMessages = (translatedLanguage) => {
+    const language = get(translatedLanguage, 'value');
+    handleProcessSelectedMessages('translate', language);
+  };
+
+  /**
+   * Gestionnaire pour la vérification d'une information
+   */
+  const handleVerifySelectedMessages = () => {
+    handleProcessSelectedMessages('verify');
+  };
+
+
   return (
     <div className="flex flex-col h-full w-8/12 m-auto bg-gray-400">
       <BaseNavBar
         onToggleSelectMode={toggleSelectMode}
         selectedMessages={selectedMessages}
+        onTranslate={handleTranslateSelectedMessages}
       />
       
         <div className="flex-grow overflow-y-auto p-4 scrollbar-hide">
         <BaseChatMessagesDisplay
-          messages={chatMock}
+          messages={messages}
           isSelectMode={isSelectMode}
           onSelectMessage={handleSelectMessage}
         />
