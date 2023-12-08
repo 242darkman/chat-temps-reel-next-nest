@@ -20,9 +20,15 @@ export const useUserContext = () => {
  */
 export const UserProvider = ({ children }) => {
   const [contextUsername, setContextUsername] = useState('');
+  const [contextMessages, setContextMessages] = useState([]);
 
   return (
-    <UserContext.Provider value={{ contextUsername, setContextUsername }}>
+    <UserContext.Provider value={{ 
+      contextUsername,
+      setContextUsername,
+      contextMessages,
+      setContextMessages
+    }}>
       {children}
     </UserContext.Provider>
   );

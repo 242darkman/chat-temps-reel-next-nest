@@ -8,8 +8,10 @@ import BaseNavBar from '../(component)/BaseNavBar.jsx';
 import LANGUAGES from '../(utils)/app.constants.js';
 import { ToastContainer } from 'react-toastify';
 import filter from 'lodash/filter.js';
+import find from 'lodash/find.js';
 import get from 'lodash/get.js';
 import io from 'socket.io-client';
+import map from 'lodash/map.js';
 import some from 'lodash/some.js';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
@@ -17,14 +19,62 @@ import { useUserContext } from '../(context)/UserContext.js';
 
 export default function ChatPage() {
   const router = useRouter();
-  const { contextUsername } = useUserContext();
+  const { contextUsername, setContextMessages } = useUserContext();
+  const [socket, setSocket] = useState(null);
+  const chatMock = [
+    {
+      messageId: 1,
+      username: "Alice",
+      message: "Hi there! How are you doing?",
+      timestamp: "07/12/2023 à 18:55"
+    },
+    {
+      messageId: 2,
+      username: "Bob",
+      message: "Hey Alice! I'm doing well, thanks. How about you?",
+      timestamp: "07/12/2023 à 18:56"
+    },
+    {
+      messageId: 3,
+      username: "Alice",
+      message: "I'm good too. Did you finish the project we discussed?",
+      timestamp: "07/12/2023 à 18:57"
+    },
+    {
+      messageId: 4,
+      username: "Bob",
+      message: "Yes, I did. I'll send you the details later today.",
+      timestamp: "07/12/2023 à 18:58"
+    },
+    {
+      messageId: 5,
+      username: "Alice",
+      message: "Great! Looking forward to it.",
+      timestamp: "07/12/2023 à 18:59"
+    },
+    {
+      messageId: 2,
+      username: "Bob",
+      message: "Saviez-vous que la Tour Eiffel a été construite en 1889 pour l'Exposition universelle à Paris ?",
+      timestamp: "07/12/2023 à 19:10"
+    },
+    {
+      messageId: 3,
+      username: "Clara",
+      message: "Je pense que la lune est faite de fromage vert. C'est étrange, non ?",
+      timestamp: "07/12/2023 à 19:15"
+    }
+  ];
+  const [messages, setMessages] = useState(chatMock);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
+
 
   useEffect(() => {
     const newSocket = io('http://localhost:8001');
     setSocket(newSocket);
 
+    setContextMessages(chatMock);
     
     /**
      * Vérifie si le nom d'utilisateur existe
@@ -44,36 +94,41 @@ export default function ChatPage() {
      * on écoute les messages entrants
      */
     newSocket.on('message', (newMessage) => {
-      console.log("🚀 ~ file: page.js:43 ~ socket.on ~ newMessage:", newMessage)
-      setMessages(prevMessages => [...prevMessages, newMessage]);
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages, newMessage];
+        setContextMessages(updatedMessages);
+        return updatedMessages;
+      });
     });
 
     /**
      * on met à jour les valeurs des messages traduits
      */
     newSocket.on('update_messages', (updatedMessages) => {
-      setMessages(prevMessages =>
-        map(prevMessages, (msg) => {
+      setMessages(prevMessages => {
+        const updatedPrevMessages = map(prevMessages, (msg) => {
           const msgId = get(msg, 'messageId');
           const updatedMessage = find(updatedMessages, (updatedMsg) => {
             const updatedMsgId = get(updatedMsg, 'messageId');
             return updatedMsgId === msgId;
           });
           return updatedMessage ? updatedMessage : msg;
-        })
-      );
+        });
+        setContextMessages(updatedPrevMessages);
+        
+        return updatedPrevMessages;
+      });
     });
 
-    /*newSocket.on('verification_result', ({ messageId, result }) => {
-      setMessages(prevMessages =>
-        prevMessages.map(msg => {
-          if (msg.messageId === messageId) {
-            return { ...msg, verificationResult: result };
-          }
-          return msg;
-        })
+    newSocket.on('verification_result', (verifyResponse) => {
+      setMessages(prevMessages => {
+        const verifiedMessages = [...prevMessages, verifyResponse];
+        setContextMessages(verifiedMessages);
+
+        return verifiedMessages;
+      }
       );
-    });*/
+    });
 
     /**
      * Nettoie en se déconnectant du socket lors du démontage du composant
@@ -164,6 +219,7 @@ export default function ChatPage() {
         onToggleSelectMode={toggleSelectMode}
         selectedMessages={selectedMessages}
         onTranslate={handleTranslateSelectedMessages}
+        onVerify={handleVerifySelectedMessages}
       />
       
         <div className="flex-grow overflow-y-auto p-4 scrollbar-hide">

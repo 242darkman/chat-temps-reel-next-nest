@@ -137,6 +137,7 @@ export class ChatGateway
     const messages = get(body, 'messages');
     const action = get(body, 'action');
     const translationLanguage = get(body, 'translationLanguage');
+    const timestamp = this.formatFrenchDate({ date: new Date() });
     const translatedMessages = [];
 
     for (const msg of messages) {
@@ -152,6 +153,18 @@ export class ChatGateway
           ...msg,
           message: translatedMessage,
         });
+      }
+
+      if (action === 'verify') {
+        const verificationResult =
+          await this.chatService.checkInformation(message);
+        const verifyedMessageWithTimestamp = {
+          ...verificationResult,
+          timestamp,
+        };
+        client.emit('verification_result', verifyedMessageWithTimestamp);
+
+        return;
       }
 
       client.emit('update_messages', translatedMessages);

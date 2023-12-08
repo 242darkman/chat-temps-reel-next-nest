@@ -20,6 +20,7 @@ const BaseChatMessagesDisplay = ({ messages, isSelectMode, onSelectMessage }) =>
             isContinued={index > 0 && messages[index - 1].username === message.username}
             isSelectMode={isSelectMode}
             onSelect={() => onSelectMessage(message)}
+            verificationStatus={message.status}
           />
       ))}
       <div ref={messagesEndRef} />
