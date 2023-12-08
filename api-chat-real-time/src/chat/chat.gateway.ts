@@ -91,6 +91,7 @@ export class ChatGateway
     timestamp: string,
   ) {
     this.server.emit('message', {
+      messageId,
       username,
       message,
       timestamp,
