@@ -7,8 +7,10 @@ import BaseChatMessagesDisplay from '../(component)/BaseChatMessagesDisplay.jsx'
 import BaseNavBar from '../(component)/BaseNavBar.jsx';
 import LANGUAGES from '../(utils)/app.constants.js';
 import { ToastContainer } from 'react-toastify';
+import filter from 'lodash/filter.js';
 import get from 'lodash/get.js';
 import io from 'socket.io-client';
+import some from 'lodash/some.js';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useUserContext } from '../(context)/UserContext.js';
@@ -18,6 +20,8 @@ export default function ChatPage() {
   const router = useRouter();
   const { contextUsername } = useUserContext();
   const [messages, setMessages] = useState([]);
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [selectedMessages, setSelectedMessages] = useState([]);
 
   useEffect(() => {
     /**
@@ -61,16 +65,45 @@ export default function ChatPage() {
     });
   };
 
+  /**
+   * fonction permettant de toggle le mode de sélection de message
+   */
+  const toggleSelectMode = () => setIsSelectMode(!isSelectMode);
+
+  /**
+   * fonction permettant de sélectionné/déselectionné un message
+   * @param {*} messageId : identifiant du message
+   */
+  const handleSelectMessage = (message) => {
+    setSelectedMessages(prevSelected => {
+      const isMessageAlreadySelected = some(prevSelected, message);
+      if (isMessageAlreadySelected) {
+        const messageId = get(message, 'messageId');
+        const filteredMessages = filter(prevSelected, (messageSelected) => {
+          const selectedMessageId = get(messageSelected, 'messageId');
+          return selectedMessageId !== messageId;
+        });
+        
+        return filteredMessages;
+      }
+
+      return [...prevSelected, message];
+    });
+  };
+
   return (
     <div className="flex flex-col h-full w-8/12 m-auto bg-gray-400">
-        <BaseNavBar 
-          selectedMessages={[]} 
-          //onTranslate={handleTranslate} 
-          //onValidate={handleValidate} 
-        />
+      <BaseNavBar
+        onToggleSelectMode={toggleSelectMode}
+        selectedMessages={selectedMessages}
+      />
       
         <div className="flex-grow overflow-y-auto p-4 scrollbar-hide">
-          <BaseChatMessagesDisplay messages={messages} />
+        <BaseChatMessagesDisplay
+          messages={chatMock}
+          isSelectMode={isSelectMode}
+          onSelectMessage={handleSelectMessage}
+        />
         </div>
 
         <div className="p-4">
