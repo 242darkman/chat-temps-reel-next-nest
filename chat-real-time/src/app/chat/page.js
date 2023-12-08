@@ -59,6 +59,7 @@ export default function ChatPage() {
     const msg = get(message, 'message');
     const translationLanguage = get(message, 'translationLanguage');
     socket.emit('send_message', {
+      messageId: messages.length + 1,
       username: contextUsername,
       message: msg,
       translationLanguage
