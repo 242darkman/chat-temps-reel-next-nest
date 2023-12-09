@@ -6,23 +6,32 @@ import { MdSend } from 'react-icons/md';
 import find from 'lodash/find.js';
 import get from 'lodash/get.js';
 import isEmpty from 'lodash/isEmpty.js';
+import { useUserContext } from '../(context)/UserContext.js';
 
-const BaseChatInput = ({ onSend, options = [], suggests = []}) => {
+const BaseChatInput = ({ onSend, options = [], socket}) => {
   const defaultLanguage = find(LANGUAGES, { value: 'French' });
   const [message, setMessage] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const { contextMessages } = useUserContext();
+
+  const requestSuggestions = () => {
+    if (socket) {
+      socket.emit('request_suggestions', { messages: contextMessages });
+    }
+  };
 
   useEffect(() => {
-    const loadSuggestions = () => {
-      if (message === '') {
-        const fetchedSuggestions = ["Suggestion 1", "Suggestion 2", "Suggestion 3"];
-        setSuggestions(fetchedSuggestions);
-      }
-    };
+    if (socket) {
+      socket.on('suggestions_response', (suggestions) => {
+        setSuggestions(suggestions);
+      });
+    }
 
-    loadSuggestions();
-  }, [message]);
+    if (isEmpty(message)) {
+      requestSuggestions();
+    }
+  }, [socket]);
 
   const handleSend = (selectedLanguage) => {
     const translationLanguage = get(selectedLanguage, 'value') ?? get(defaultLanguage, 'value');
@@ -48,6 +57,7 @@ const BaseChatInput = ({ onSend, options = [], suggests = []}) => {
 
   const handleFocus = () => {
     if (isEmpty(message)) {
+      requestSuggestions();
       setShowSuggestions(true);
     }
   };

@@ -135,8 +135,8 @@ export default function ChatPage() {
      */
     return () => {
       newSocket.disconnect();
-      //socket.off('update_message');
-      //socket.off('verification_result');
+      socket.off('update_message');
+      socket.off('verification_result');
     }
   }, [contextUsername, router]);
 
@@ -234,6 +234,7 @@ export default function ChatPage() {
         <BaseChatInput
           onSend={handleSend}
           options={LANGUAGES}
+          socket={socket}
         />
         </div>
       

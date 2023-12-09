@@ -171,6 +171,21 @@ export class ChatGateway
     }
   }
 
+  @SubscribeMessage('request_suggestions')
+  async handleRequestSuggestions(
+    @MessageBody() body: { messages: [] },
+    @ConnectedSocket() client: Socket,
+  ) {
+    try {
+      const messages = body.messages;
+      const suggestions = await this.chatService.suggestResponse(messages);
+
+      client.emit('suggestions_response', suggestions);
+    } catch (error) {
+      this.logger.error(`Error in handleRequestSuggestions: ${error.message}`);
+    }
+  }
+
   @SubscribeMessage('send_audio')
   async handleAudio(
     @MessageBody() audio: Buffer,

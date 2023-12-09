@@ -1,4 +1,4 @@
-import { get, includes, some } from 'lodash';
+import { filter, get, includes, map, some } from 'lodash';
 
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
@@ -102,6 +102,63 @@ export class ChatService {
       };
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  async suggestResponse(messages: []): Promise<string[]> {
+    try {
+      // Filtrage des messages pour exclure ceux de 'Cerebrix'
+      const filteredMessages = filter(messages, (message) => {
+        return get(message, 'username') !== 'Cerebrix';
+      });
+
+      // Construction du contexte de la discussion
+      const discussionContext = map(filteredMessages, (msg) => {
+        return `${get(msg, 'username')}: ${get(msg, 'message')}`;
+      }).join('\n');
+
+      // Utilisation de l'API d'OpenAI pour déterminer la langue du dernier message
+      const lastMessage = get(
+        filteredMessages[filteredMessages.length - 1],
+        'message',
+      );
+      const languageResponse = await this.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: `What is the language of this message? "${lastMessage}". Just give the name of the language without single or double quotes and without explanation`,
+          },
+        ],
+      });
+
+      const lastMessageLanguage = get(
+        languageResponse.choices[0].message,
+        'content',
+      );
+
+      // Créer un prompt pour OpenAI
+      const prompt = `Given the following conversation in ${lastMessageLanguage}:\n${discussionContext}\nSuggest three possible responses to the last message in ${lastMessageLanguage} : Each response mustn't have any numbering, bulleted lists or other numbering.`;
+
+      // Envoyer le prompt à l'API d'OpenAI
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: prompt,
+          },
+        ],
+      });
+
+      // Extraction des suggestions de la réponse
+      const suggestedResponses = get(response.choices[0].message, 'content')
+        .split('\n')
+        .slice(0, 3);
+
+      return suggestedResponses;
+    } catch (err) {
+      throw new Error(err);
     }
   }
 }
