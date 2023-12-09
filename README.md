@@ -5,6 +5,7 @@
  > * Socket IO Client  v4.7.2
  > * Tailwindcss v3.3
  > * React icons v4.12.0
+ > * OpenAI v4.20.1
 
 
 ## Contributeur :
@@ -35,6 +36,6 @@ L'application est disponible sur `http://localhost:3000`
   ## Fonctionnalités :
 1. **Communication temps réel** entre deux utilisateurs
 2. L'utilisateur peut envoyer un message déjà traduit dans la langue de son choix
-3. L'utilisateur peut aussi traduire les messages qu'il a reçu d'un utilisateur
-4. L'utilisateur a la possibilité de checker la véracité d'une information d'un message particulier qu'il a reçu
+3. L'utilisateur peut aussi traduire les messages qu'il a reçu d'un utilisateur. La traduction des messages reçus peut être multiple.
+4. L'utilisateur a la possibilité de checker la véracité d'une information d'un message particulier qu'il a reçu. **ON NE PEUT VERIFIER UNE INFORMATION QUE POUR UN MESSAGE**
 5. Des réponses lui sont suggérés en fonction du contexte de la conversation et du dernier message reçu. Pour voir les suggestions de réponses il faudrait placer le curseur dans la zone de saisie ensuite un volet s'affichera, ensuite l'utilisateur pourra faire son choix.

@@ -3,16 +3,18 @@ import { FaGlobeAfrica } from "react-icons/fa";
 import { FaUserCircle } from "react-icons/fa";
 import LANGUAGES from '../(utils)/app.constants.js';
 import React from 'react';
+import size from 'lodash/size.js';
+import some from 'lodash/some.js';
 import { useUserContext } from '../(context)/UserContext.js';
 
 const BaseNavBar = ({ onToggleSelectMode, selectedMessages, onTranslate, onVerify }) => {
-  const { contextMessages } = useUserContext();
+  const { contextMessages, contextUsername } = useUserContext();
   
   return (
     <div className="flex flex-col p-2 bg-gray-200 rounded-lg rounded-t-none">
       
       <div className="flex justify-end space-x-4 m-auto">
-        {contextMessages.length > 1 ? (
+        {size(contextMessages) >= 1 && some(contextMessages, message => message.username !== contextUsername) ? (
           <BaseButton
             onClick={onToggleSelectMode} className="px-4 py-2 bg-blue-500 text-white rounded"
           >

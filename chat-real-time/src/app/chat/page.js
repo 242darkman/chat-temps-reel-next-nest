@@ -25,7 +25,6 @@ export default function ChatPage() {
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
 
-
   useEffect(() => {
     const newSocket = io('http://localhost:8001');
     setSocket(newSocket);
@@ -50,7 +49,6 @@ export default function ChatPage() {
     newSocket.on('message', (newMessage) => {
       setMessages(prevMessages => {
         const updatedMessages = [...prevMessages, newMessage];
-        setContextMessages(updatedMessages);
         return updatedMessages;
       });
     });
@@ -68,7 +66,6 @@ export default function ChatPage() {
           });
           return updatedMessage ? updatedMessage : msg;
         });
-        setContextMessages(updatedPrevMessages);
         
         return updatedPrevMessages;
       });
@@ -77,7 +74,6 @@ export default function ChatPage() {
     newSocket.on('verification_result', (verifyResponse) => {
       setMessages(prevMessages => {
         const verifiedMessages = [...prevMessages, verifyResponse];
-        setContextMessages(verifiedMessages);
 
         return verifiedMessages;
       }
@@ -93,6 +89,10 @@ export default function ChatPage() {
       newSocket.off('verification_result');
     }
   }, [contextUsername, router]);
+
+  useEffect(() => { 
+    setContextMessages(messages);
+  }, [messages]);
 
   /**
    * fonction gérant la diffusion de messages dans le socket
