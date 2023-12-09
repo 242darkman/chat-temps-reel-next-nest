@@ -21,51 +21,7 @@ export default function ChatPage() {
   const router = useRouter();
   const { contextUsername, setContextMessages } = useUserContext();
   const [socket, setSocket] = useState(null);
-  const chatMock = [
-    {
-      messageId: 1,
-      username: "Alice",
-      message: "Hi there! How are you doing?",
-      timestamp: "07/12/2023 à 18:55"
-    },
-    {
-      messageId: 2,
-      username: "Bob",
-      message: "Hey Alice! I'm doing well, thanks. How about you?",
-      timestamp: "07/12/2023 à 18:56"
-    },
-    {
-      messageId: 3,
-      username: "Alice",
-      message: "I'm good too. Did you finish the project we discussed?",
-      timestamp: "07/12/2023 à 18:57"
-    },
-    {
-      messageId: 4,
-      username: "Bob",
-      message: "Yes, I did. I'll send you the details later today.",
-      timestamp: "07/12/2023 à 18:58"
-    },
-    {
-      messageId: 5,
-      username: "Alice",
-      message: "Great! Looking forward to it.",
-      timestamp: "07/12/2023 à 18:59"
-    },
-    {
-      messageId: 2,
-      username: "Bob",
-      message: "Saviez-vous que la Tour Eiffel a été construite en 1889 pour l'Exposition universelle à Paris ?",
-      timestamp: "07/12/2023 à 19:10"
-    },
-    {
-      messageId: 3,
-      username: "Clara",
-      message: "Je pense que la lune est faite de fromage vert. C'est étrange, non ?",
-      timestamp: "07/12/2023 à 19:15"
-    }
-  ];
-  const [messages, setMessages] = useState(chatMock);
+  const [messages, setMessages] = useState([]);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
 
@@ -73,8 +29,6 @@ export default function ChatPage() {
   useEffect(() => {
     const newSocket = io('http://localhost:8001');
     setSocket(newSocket);
-
-    setContextMessages(chatMock);
     
     /**
      * Vérifie si le nom d'utilisateur existe
@@ -135,8 +89,8 @@ export default function ChatPage() {
      */
     return () => {
       newSocket.disconnect();
-      socket.off('update_message');
-      socket.off('verification_result');
+      newSocket.off('update_message');
+      newSocket.off('verification_result');
     }
   }, [contextUsername, router]);
 

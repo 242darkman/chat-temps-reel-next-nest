@@ -37,4 +37,4 @@ L'application est disponible sur `http://localhost:3000`
 2. L'utilisateur peut envoyer un message déjà traduit dans la langue de son choix
 3. L'utilisateur peut aussi traduire les messages qu'il a reçu d'un utilisateur
 4. L'utilisateur a la possibilité de checker la véracité d'une information d'un message particulier qu'il a reçu
-5. Des réponses lui sont suggérés en fonction du contexte de la conversation et du dernier message reçu.
+5. Des réponses lui sont suggérés en fonction du contexte de la conversation et du dernier message reçu. Pour voir les suggestions de réponses il faudrait placer le curseur dans la zone de saisie ensuite un volet s'affichera, ensuite l'utilisateur pourra faire son choix.

@@ -6,6 +6,7 @@ import { MdSend } from 'react-icons/md';
 import find from 'lodash/find.js';
 import get from 'lodash/get.js';
 import isEmpty from 'lodash/isEmpty.js';
+import size from 'lodash/size.js';
 import { useUserContext } from '../(context)/UserContext.js';
 
 const BaseChatInput = ({ onSend, options = [], socket}) => {
@@ -16,7 +17,7 @@ const BaseChatInput = ({ onSend, options = [], socket}) => {
   const { contextMessages } = useUserContext();
 
   const requestSuggestions = () => {
-    if (socket) {
+    if (socket && size(contextMessages) > 0) {
       socket.emit('request_suggestions', { messages: contextMessages });
     }
   };
@@ -43,11 +44,6 @@ const BaseChatInput = ({ onSend, options = [], socket}) => {
     }
   };
 
-  const handleSuggestionClick = (suggestion) => {
-    setMessage(suggestion);
-    setShowSuggestions(false);
-  };
-
   const handleChange = (e) => {
     setMessage(e.target.value);
     if (!isEmpty(e.target.value)) {
@@ -57,12 +53,19 @@ const BaseChatInput = ({ onSend, options = [], socket}) => {
 
   const handleFocus = () => {
     if (isEmpty(message)) {
-      requestSuggestions();
       setShowSuggestions(true);
     }
   };
 
   const handleBlur = () => {
+    setTimeout(() => {
+      setShowSuggestions(false);
+    }, 100);
+  };
+
+  const handleSuggestionClick = (e, suggestion) => {
+    e.stopPropagation();
+    setMessage(suggestion);
     setShowSuggestions(false);
   };
 
@@ -82,9 +85,9 @@ const BaseChatInput = ({ onSend, options = [], socket}) => {
         <div className="absolute bottom-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg">
           {suggestions.map((suggestion, index) => (
             <div
-              key={index}
+              key={`${suggestion}-${index}`}
               className="p-2 hover:bg-gray-200 cursor-pointer"
-              onClick={() => handleSuggestionClick(suggestion)}
+              onClick={(e) => handleSuggestionClick(e, suggestion)}
             >
               {suggestion}
             </div>
