@@ -65,7 +65,7 @@ const BaseButton = ({
   return (
     <div className="inline-block relative" ref={buttonContainerRef}>
       <div className="flex rounded-lg">
-        <button className={`${getButtonClasses()} ${roundedClasses} flex flex-grow justify-between`} onClick={() => onClick(selectedOption)}>
+        <button className={`${getButtonClasses()} ${roundedClasses} flex flex-grow justify-center items-center`} onClick={() => onClick(selectedOption)}>
           {icon && iconPosition === 'left' && <span className={getIconClasses()}>{icon}</span>}
           <span>{children}</span>
           {icon && iconPosition === 'right' && <span className={getIconClasses()}>{icon}</span>}
