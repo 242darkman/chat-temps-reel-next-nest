@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { MdMic, MdSend } from 'react-icons/md';
+import React, { useEffect, useRef, useState } from 'react';
 
 import BaseButton from './BaseButton.jsx';
 import LANGUAGES from '../(utils)/app.constants.js';
-import { MdSend } from 'react-icons/md';
 import find from 'lodash/find.js';
 import get from 'lodash/get.js';
 import isEmpty from 'lodash/isEmpty.js';
@@ -14,7 +14,9 @@ const BaseChatInput = ({ onSend, options = [], socket}) => {
   const [message, setMessage] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const { contextMessages } = useUserContext();
+  const recognitionRef = useRef(null);
 
   const requestSuggestions = () => {
     if (socket && size(contextMessages) > 0) {
@@ -69,32 +71,65 @@ const BaseChatInput = ({ onSend, options = [], socket}) => {
     setShowSuggestions(false);
   };
 
+  const handleVoiceInput = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("Votre navigateur ne supporte pas la reconnaissance vocale");
+      return;
+    }
+
+    const recognition = recognitionRef.current || new window.webkitSpeechRecognition();
+    recognition.interimResults = true;
+    recognition.lang = 'fr-FR';
+    recognition.onresult = (event) => {
+      setMessage(event.results[0][0].transcript);
+    };
+
+    recognitionRef.current = recognition;
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    recognitionRef.current.start();
+    setIsRecording(true);
+  };
+
+
   return (
     <div className="flex items-center mt-4 gap-2 relative">
       <div className="flex-grow relative">
-      <input
-        type="text"
-        value={message}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        className="w-full p-3.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Ecrire un message..."
-      />
-      {showSuggestions && (
-        <div className="absolute bottom-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg">
-          {suggestions.map((suggestion, index) => (
-            <div
-              key={`${suggestion}-${index}`}
-              className="p-2 hover:bg-gray-200 cursor-pointer"
-              onClick={(e) => handleSuggestionClick(e, suggestion)}
-            >
-              {suggestion}
-            </div>
-          ))}
+        <input
+          type="text"
+          value={message}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          className="w-full p-3.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ecrire un message..."
+        />
+        {showSuggestions && (
+          <div className="absolute bottom-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={`${suggestion}-${index}`}
+                className="p-2 hover:bg-gray-200 cursor-pointer"
+                onClick={(e) => handleSuggestionClick(e, suggestion)}
+              >
+                {suggestion}
+              </div>
+            ))}
         </div>
       )}
-    </div>
+      </div>
+      <BaseButton 
+        onClick={handleVoiceInput}
+        icon={isRecording ? <MdMic color="red" /> : <MdMic style={{ width: '20px', height: '20px' }} />} 
+        iconPosition='right'
+        className="absolute right-0 mr-4"
+        style='w-8'
+      />
       <BaseButton 
         onClick={handleSend}
         icon={<MdSend />} 
